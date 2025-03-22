@@ -108,11 +108,7 @@ To further enhance the Tor-Rent platform, the following unique features can be c
 
 2. **Augmented Reality (AR) Property Tours**: Allow prospective tenants to take immersive virtual tours of properties using AR technology, providing a realistic viewing experience without the need for physical visits. :contentReference[oaicite:1]{index=1}
 
-3. **Personalized Property Recommendations**: Utilize AI algorithms to suggest properties based on a tenant's preferences, search history, and behavior, enhancing the user experience by making the search process more efficient. :contentReference[oaicite:2]{index=2}
-
-4. **Community Engagement Platforms**: Create forums or social platforms within the application where tenants can interact, share experiences, and organize community events, fostering a sense of community and belonging.
-
-5. **Referral Incentive Programs**: Encourage existing tenants to refer friends or family by offering incentives such as rent discounts or rewards, promoting organic growth and tenant satisfaction. :contentReference[oaicite:3]{index=3}
+3. **Community Engagement Platforms**: Create chat forums within the application where tenants can interact, share experiences, and organize community events, fostering a sense of community and belonging.
 
 **For Landlords:**
 
@@ -122,4 +118,16 @@ To further enhance the Tor-Rent platform, the following unique features can be c
 
 3. **Tenant Screening and Rating Systems**: Develop a decentralized rating system where
 ::contentReference[oaicite:5]{index=5}
+
+---
+
+**Additional features**
  
+- User should be able to download the rental aggreement
+- the community discussion forum will be anonymous
+- and the chat feature between tenant and landlord should not be anonymous
+- tentants should be able to add the rating to the property which also should be anonymous should be displayed in semi-circle pie chart
+- Ai chatbot
+- services option should be given like plumber, pest control,electrician, etc.
+- properties map view
+- for tenant: on or before time rent pay they will be getting rentocoin which they can redeem as a zomato/swiggy/zepto coupon or they can also redem them as real currency or adjacent crypto. for late payment rentocoin would be deducted
