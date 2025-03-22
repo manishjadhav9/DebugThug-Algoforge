@@ -42,7 +42,7 @@ Tor-Rent introduces a blockchain-based rental agreement system that ensures secu
 
 ## Tech Stack
 - **Frontend:** React, Tailwind CSS
-- **Backend:** Node.js, Express, SQLite (Gamification), MongoDB (General Data Storage)
+- **Backend:** Node.js, Express, SQLite (Gamification, Data Storage)
 - **Blockchain:** Solidity, Hardhat, Ethers.js, Polygon
 - **Web3 Integration:** Metamask
 - **File Storage:** Decentralized storage systems (Future enhancement)
