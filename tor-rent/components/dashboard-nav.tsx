@@ -16,7 +16,12 @@ import {
   X,
   HelpCircle,
   Bell,
-  Briefcase
+  Briefcase,
+  History,
+  Star,
+  FileText,
+  Shield,
+  Gift
 } from "lucide-react"
 
 interface DashboardNavProps {
@@ -43,6 +48,11 @@ export function DashboardNav({ userType = "tenant", isMobile = false, isOpen = f
         icon: <Home className="mr-2 h-4 w-4" />,
       },
       {
+        title: "My Rentals",
+        href: "/dashboard/my-rentals",
+        icon: <History className="mr-2 h-4 w-4" />,
+      },
+      {
         title: "Messages",
         href: "/dashboard/messages",
         icon: <MessageSquare className="mr-2 h-4 w-4" />,
@@ -51,6 +61,31 @@ export function DashboardNav({ userType = "tenant", isMobile = false, isOpen = f
         title: "Payments",
         href: "/dashboard/payments",
         icon: <Wallet className="mr-2 h-4 w-4" />,
+      },
+      {
+        title: "Maintenance Requests",
+        href: "/dashboard/maintenance",
+        icon: <Wrench className="mr-2 h-4 w-4" />,
+      },
+      {
+        title: "Reviews & Ratings",
+        href: "/dashboard/reviews",
+        icon: <Star className="mr-2 h-4 w-4" />,
+      },
+      {
+        title: "Documents",
+        href: "/dashboard/documents",
+        icon: <FileText className="mr-2 h-4 w-4" />,
+      },
+      {
+        title: "Insurance",
+        href: "/dashboard/insurance",
+        icon: <Shield className="mr-2 h-4 w-4" />,
+      },
+      {
+        title: "Loyalty Points",
+        href: "/dashboard/loyalty",
+        icon: <Gift className="mr-2 h-4 w-4" />,
       },
       {
         title: "Settings",
