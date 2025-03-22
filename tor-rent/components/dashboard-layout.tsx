@@ -25,11 +25,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarFallback>RS</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">John Doe</p>
-              <p className="text-xs text-gray-500">john.doe@example.com</p>
+              <p className="text-sm font-medium">Rahul Sharma</p>
+              <p className="text-xs text-gray-500">rahul.sharma@example.com</p>
             </div>
           </div>
           <Button variant="ghost" className="mt-4 w-full justify-start text-gray-500 hover:text-gray-900">

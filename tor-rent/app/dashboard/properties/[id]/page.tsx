@@ -31,25 +31,27 @@ import {
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { VRView } from "@/components/vr-view"
 import { AssuranceMeter } from "@/components/assurance-meter"
+import { PropertyLocationMap } from "@/components/property-location-map"
 
 // Static property data
 const properties = [
   {
     id: "1",
     title: "Modern Apartment",
-    location: "Downtown, Seattle",
+    location: "Colaba, Mumbai",
     price: "0.05 ETH/month",
     image: "/placeholder.svg?height=200&width=300",
     status: "active",
     credScore: 95,
-    description: "A beautiful modern apartment in the heart of downtown with stunning city views.",
+    description: "A beautiful modern apartment in South Mumbai with stunning sea views. This fully furnished apartment offers spacious living in one of Mumbai's most prestigious neighborhoods.",
     bedrooms: 2,
     bathrooms: 2,
     area: "1,200 sq ft",
-    amenities: ["Parking", "Gym", "Pool", "Pet Friendly"],
-    coordinates: { lat: 47.6062, lng: -122.3321 },
+    amenities: ["Parking", "Gym", "Swimming Pool", "Pet Friendly"],
+    coordinates: { lat: 18.9067, lng: 72.8147 },
+    propertyType: "Apartment",
     owner: {
-      name: "Sarah Johnson",
+      name: "Priya Sharma",
       image: "/placeholder.svg?height=40&width=40",
       credScore: 98,
       responseRate: "95%",
@@ -85,20 +87,21 @@ const properties = [
   },
   {
     id: "2",
-    title: "Studio Loft",
-    location: "Capitol Hill, Seattle",
+    title: "Studio Apartment",
+    location: "Bandra West, Mumbai",
     price: "0.03 ETH/month",
     image: "/placeholder.svg?height=200&width=300",
     status: "active",
     credScore: 88,
-    description: "Cozy studio loft in the vibrant Capitol Hill neighborhood, close to restaurants and nightlife.",
+    description: "Cozy studio apartment in the vibrant Bandra West neighborhood, close to restaurants, cafes, and nightlife spots. Perfect for young professionals.",
     bedrooms: 1,
     bathrooms: 1,
     area: "650 sq ft",
     amenities: ["Rooftop Deck", "Laundry", "Bike Storage"],
-    coordinates: { lat: 47.6253, lng: -122.3222 },
+    coordinates: { lat: 19.0596, lng: 72.8295 },
+    propertyType: "Studio",
     owner: {
-      name: "Alex Thompson",
+      name: "Arjun Patel",
       image: "/placeholder.svg?height=40&width=40",
       credScore: 92,
       responseRate: "90%",
@@ -126,20 +129,21 @@ const properties = [
   },
   {
     id: "3",
-    title: "Cozy Townhouse",
-    location: "Ballard, Seattle",
+    title: "Family Villa",
+    location: "Juhu, Mumbai",
     price: "0.07 ETH/month",
     image: "/placeholder.svg?height=200&width=300",
     status: "active",
     credScore: 92,
-    description: "Spacious townhouse in family-friendly Ballard with a private backyard.",
+    description: "Spacious villa in the celebrity-filled Juhu area with a private garden and easy access to the beach. Ideal for families looking for luxury living.",
     bedrooms: 3,
     bathrooms: 2.5,
     area: "1,800 sq ft",
-    amenities: ["Backyard", "Garage", "Fireplace", "Washer/Dryer"],
-    coordinates: { lat: 47.6677, lng: -122.3829 },
+    amenities: ["Garden", "Covered Parking", "Terrace", "Power Backup"],
+    coordinates: { lat: 19.1075, lng: 72.8263 },
+    propertyType: "Villa",
     owner: {
-      name: "Robert Garcia",
+      name: "Rajesh Mehta",
       image: "/placeholder.svg?height=40&width=40",
       credScore: 95,
       responseRate: "98%",
@@ -152,7 +156,7 @@ const properties = [
         avatar: "/placeholder.svg?height=40&width=40",
         date: "March 10, 2025",
         rating: 5,
-        comment: "Perfect for our family. The backyard was great for our kids and dog.",
+        comment: "Perfect for our family. The garden was great for our kids and pet.",
       },
       {
         id: "2",
@@ -160,7 +164,7 @@ const properties = [
         avatar: "/placeholder.svg?height=40&width=40",
         date: "February 28, 2025",
         rating: 4,
-        comment: "Spacious and comfortable. The garage was a big plus for us.",
+        comment: "Spacious and comfortable. The covered parking was a big plus for us.",
       },
     ],
     assuranceScore: 90,
@@ -194,7 +198,7 @@ export default function PropertyDetailPage() {
       if (!currentCompareList.includes(property.id) && currentCompareList.length < 3) {
         // Add to comparison
         currentCompareList.push(property.id)
-        localStorage.setItem("compareList", JSON.stringify(newList))
+        localStorage.setItem("compareList", JSON.stringify(currentCompareList))
       }
     }
   }
@@ -354,14 +358,8 @@ export default function PropertyDetailPage() {
                         <MapPin className="h-5 w-5 text-orange-500" />
                         <span className="font-medium">{property.location}</span>
                       </div>
-                      <div className="h-[300px] overflow-hidden rounded-lg border bg-gray-100">
-                        <div className="flex h-full items-center justify-center">
-                          <img
-                            src={`/placeholder.svg?height=300&width=600&text=Map+of+${encodeURIComponent(property.location)}`}
-                            alt={`Map of ${property.location}`}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
+                      <div className="h-[300px] overflow-hidden rounded-lg border">
+                        <PropertyLocationMap property={property} />
                       </div>
                       <p className="text-gray-600">
                         The exact address will be provided after your rental agreement is confirmed.

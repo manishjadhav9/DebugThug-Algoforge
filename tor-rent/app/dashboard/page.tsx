@@ -35,11 +35,11 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarFallback>RS</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">John Doe</p>
-              <p className="text-xs text-gray-500">john.doe@example.com</p>
+              <p className="text-sm font-medium">Rahul Sharma</p>
+              <p className="text-xs text-gray-500">rahul.sharma@example.com</p>
             </div>
           </div>
           <Button variant="ghost" className="mt-4 w-full justify-start text-gray-500 hover:text-gray-900">
@@ -80,7 +80,7 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <h1 className="text-3xl font-bold">Dashboard</h1>
-              <p className="text-gray-500">Welcome back, John Doe</p>
+              <p className="text-gray-500">Welcome back, Rahul Sharma</p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
@@ -136,27 +136,30 @@ export default function DashboardPage() {
               <TabsContent value="properties" className="mt-6">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   <PropertyCard
-                    title="Modern Apartment"
-                    location="Downtown, Seattle"
-                    price="0.05 ETH/month"
-                    image="/placeholder.svg?height=200&width=300"
+                    id="prop-1"
+                    title="Modern Luxury Apartment"
+                    location="Koramangala, Bangalore"
+                    price="₹85,000/month"
+                    image="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80"
                     status="active"
                     credScore={95}
                   />
                   <PropertyCard
-                    title="Studio Loft"
-                    location="Capitol Hill, Seattle"
-                    price="0.03 ETH/month"
-                    image="/placeholder.svg?height=200&width=300"
+                    id="prop-2"
+                    title="Cozy Studio Apartment"
+                    location="Indiranagar, Bangalore"
+                    price="₹45,000/month"
+                    image="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80"
                     status="active"
-                    credScore={88}
+                    credScore={85}
                   />
                   <PropertyCard
-                    title="Cozy Townhouse"
-                    location="Ballard, Seattle"
-                    price="0.07 ETH/month"
-                    image="/placeholder.svg?height=200&width=300"
-                    status="active"
+                    id="prop-3"
+                    title="Spacious Family Villa"
+                    location="HSR Layout, Bangalore"
+                    price="₹1,20,000/month"
+                    image="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80"
+                    status="pending"
                     credScore={92}
                   />
                 </div>
@@ -209,12 +212,12 @@ export default function DashboardPage() {
                     <AlertTriangle className="mt-0.5 h-5 w-5 text-orange-500" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-medium">Heating not working properly</h3>
+                        <h3 className="font-medium">AC not working properly</h3>
                         <Badge className="bg-red-500">High Priority</Badge>
                       </div>
                       <p className="mt-1 text-sm text-gray-500">Reported on March 20, 2025</p>
                       <p className="mt-2 text-sm">
-                        The heating system is not working in the living room. Temperature is very low.
+                        The air conditioning system is not working in the living room. Temperature is very high.
                       </p>
                     </div>
                   </div>

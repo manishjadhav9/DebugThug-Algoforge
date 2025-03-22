@@ -10,27 +10,27 @@ export function Testimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <TestimonialCard
-            name="Alex Johnson"
+            name="Aryan Sharma"
+            role="Renter"
+            image="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
+            rating={5}
+            testimonial="Tor-Rent has made finding a flat in Bangalore so much easier. I relocated from Delhi for my IT job, and the verified listings with virtual tours saved me multiple trips. The RentoCoin rewards are a bonus!"
+          />
+
+          <TestimonialCard
+            name="Meera Patel"
             role="Property Owner"
-            image="/placeholder.svg?height=100&width=100"
-            rating={5}
-            testimonial="Tor-Rent has completely transformed how I manage my rental properties. The blockchain-based agreements give me peace of mind, and I love the automated payment system."
-          />
-
-          <TestimonialCard
-            name="Sarah Williams"
-            role="Tenant"
-            image="/placeholder.svg?height=100&width=100"
+            image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
             rating={4}
-            testimonial="As someone who rents frequently, the Cred Score system has been a game-changer. I can now showcase my reliability as a tenant, which has made finding new rentals much easier."
+            testimonial="As a landlord with multiple properties in HSR Layout, Tor-Rent has helped me find reliable tenants quickly. The credibility score system ensures I get trustworthy professionals who pay rent on time."
           />
 
           <TestimonialCard
-            name="Michael Chen"
-            role="Equipment Lender"
-            image="/placeholder.svg?height=100&width=100"
+            name="Vikram Mehta"
+            role="Item Owner"
+            image="https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
             rating={5}
-            testimonial="I rent out camera equipment, and Tor-Rent's multi-item rental feature is perfect for my business. The secure payments and transparent agreements have eliminated payment disputes."
+            testimonial="I've been renting out my camera equipment on weekends through Tor-Rent. The secure payment system and insurance coverage give me peace of mind, and I've earned enough to upgrade to the latest Sony Alpha series!"
           />
         </div>
       </div>
