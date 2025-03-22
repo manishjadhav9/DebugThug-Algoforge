@@ -6,7 +6,11 @@
   "scripts": {
     "test": "hardhat test",
     "compile": "hardhat compile",
-    "generate-abi": "node scripts/generate-abi.js"
+    "generate-abi": "node scripts/generate-abi.js",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "deploy:localhost": "hardhat run scripts/deploy.js --network localhost",
+    "interact:localhost": "hardhat run scripts/interact.js --network localhost",
+    "interact-all:localhost": "hardhat run scripts/interact-all.js --network localhost"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +18,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.7",
     "hardhat": "^2.22.19"
   }
 }
