@@ -13,33 +13,33 @@ import { DashboardLayout } from "@/components/dashboard-layout"
 const forumPosts = [
   {
     id: "1",
-    title: "Tips for first-time renters?",
+    title: "Tips for first-time renters in Bangalore?",
     content:
-      "I'm about to rent my first apartment using Tor-Rent. Any advice on what I should look out for or questions I should ask the landlord?",
+      "I'm about to rent my first apartment in Koramangala using Tor-Rent. Any advice on what I should look out for or questions I should ask the landlord about maintenance fees and water supply?",
     author: {
       name: "Anonymous",
       avatar: "/placeholder.svg?height=40&width=40",
       credScore: 85,
     },
     date: "2 hours ago",
-    region: "Seattle, WA",
+    region: "Bangalore",
     likes: 12,
     dislikes: 0,
     comments: 5,
-    tags: ["Advice", "First-time"],
+    tags: ["Advice", "First-time", "Bangalore"],
   },
   {
     id: "2",
     title: "How to improve my Cred Score?",
     content:
-      "My Cred Score is currently at 78. What are some ways I can improve it to get better rental opportunities?",
+      "My Cred Score is currently at 78. What are some ways I can improve it to get better rental opportunities in premium societies?",
     author: {
       name: "Anonymous",
       avatar: "/placeholder.svg?height=40&width=40",
       credScore: 78,
     },
     date: "Yesterday",
-    region: "Portland, OR",
+    region: "Mumbai",
     likes: 8,
     dislikes: 1,
     comments: 7,
@@ -49,14 +49,14 @@ const forumPosts = [
     id: "3",
     title: "Experience with smart contract rentals",
     content:
-      "Has anyone had experience with the smart contract rental system? How does it compare to traditional rental agreements?",
+      "Has anyone had experience with the smart contract rental system? How does it compare to the traditional 11-month rental agreements common in India?",
     author: {
       name: "Anonymous",
       avatar: "/placeholder.svg?height=40&width=40",
       credScore: 92,
     },
     date: "2 days ago",
-    region: "San Francisco, CA",
+    region: "Delhi NCR",
     likes: 15,
     dislikes: 0,
     comments: 10,
@@ -64,29 +64,42 @@ const forumPosts = [
   },
   {
     id: "4",
-    title: "Best neighborhoods in Seattle for young professionals?",
+    title: "Best areas in Bangalore for IT professionals?",
     content:
-      "I'm relocating to Seattle for work and looking for recommendations on neighborhoods that are good for young professionals. Budget is around 0.05 ETH/month.",
+      "I'm relocating to Bangalore for a job at an IT company and looking for recommendations on neighborhoods that are good for tech professionals. Budget is around ₹50,000/month with good connectivity to Electronic City.",
     author: {
       name: "Anonymous",
       avatar: "/placeholder.svg?height=40&width=40",
       credScore: 88,
     },
     date: "3 days ago",
-    region: "Seattle, WA",
+    region: "Bangalore",
     likes: 20,
     dislikes: 2,
     comments: 15,
-    tags: ["Seattle", "Neighborhoods"],
+    tags: ["Bangalore", "IT Hubs", "Housing"],
   },
 ]
 
-const comments = {
+interface Comment {
+  id: string;
+  content: string;
+  author: {
+    name: string;
+    avatar: string;
+    credScore: number;
+  };
+  date: string;
+  likes: number;
+  dislikes: number;
+}
+
+const comments: Record<string, Comment[]> = {
   "1": [
     {
       id: "1",
       content:
-        "Always check the property in person before signing any agreement. Virtual tours are great, but nothing beats seeing it with your own eyes.",
+        "Always check the property in person before signing any agreement. Make sure to check water pressure during your visit and ask about power backup systems.",
       author: {
         name: "Anonymous",
         avatar: "/placeholder.svg?height=40&width=40",
@@ -99,7 +112,7 @@ const comments = {
     {
       id: "2",
       content:
-        "Make sure to read the smart contract terms carefully. The beauty of Tor-Rent is that everything is transparent and immutable.",
+        "Make sure to read the smart contract terms carefully. The beauty of Tor-Rent is that everything is transparent and immutable. Also check if the society has any restrictions on bachelors or certain food preferences.",
       author: {
         name: "Anonymous",
         avatar: "/placeholder.svg?height=40&width=40",
@@ -111,7 +124,7 @@ const comments = {
     },
     {
       id: "3",
-      content: "Check the Cred Score of the property and the landlord. It's a good indicator of what to expect.",
+      content: "Check the Cred Score of the property and the landlord. It's a good indicator of what to expect. Also verify if there's a working RO water purifier installed.",
       author: {
         name: "Anonymous",
         avatar: "/placeholder.svg?height=40&width=40",
@@ -124,7 +137,7 @@ const comments = {
   ],
 }
 
-const regions = ["All Regions", "Seattle, WA", "Portland, OR", "San Francisco, CA", "Los Angeles, CA", "New York, NY"]
+const regions = ["All Regions", "Bangalore", "Mumbai", "Delhi NCR", "Hyderabad", "Pune", "Chennai", "Kolkata"]
 
 export default function CommunityPage() {
   const [searchQuery, setSearchQuery] = useState("")

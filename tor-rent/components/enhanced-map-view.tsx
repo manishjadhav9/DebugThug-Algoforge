@@ -35,16 +35,16 @@ interface EnhancedMapViewProps {
 // Add more properties with different regions
 const allRegions = [
   "All Regions",
-  "Downtown, Seattle",
-  "Capitol Hill, Seattle",
-  "Ballard, Seattle",
-  "Wallingford, Seattle",
-  "South Lake Union, Seattle",
-  "Fremont, Seattle",
-  "Queen Anne, Seattle",
-  "West Seattle",
-  "Bellevue",
-  "Redmond",
+  "Koramangala, Bangalore",
+  "Indiranagar, Bangalore",
+  "HSR Layout, Bangalore",
+  "Whitefield, Bangalore",
+  "MG Road, Bangalore",
+  "Jayanagar, Bangalore",
+  "JP Nagar, Bangalore",
+  "Electronic City, Bangalore",
+  "Marathahalli, Bangalore",
+  "Hebbal, Bangalore",
 ]
 
 export function EnhancedMapView({ properties, fullScreen = false }: EnhancedMapViewProps) {

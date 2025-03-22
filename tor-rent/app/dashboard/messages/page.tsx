@@ -14,75 +14,75 @@ const conversations = [
   {
     id: "1",
     user: {
-      name: "Sarah Johnson",
+      name: "Priya Sharma",
       avatar: "/placeholder.svg?height=40&width=40",
       isOnline: true,
     },
     lastMessage: {
-      text: "Hi, I'm interested in your Modern Apartment listing. Is it still available?",
+      text: "Hi, I'm interested in your Modern Luxury Apartment in Koramangala. Is it still available?",
       time: "10:30 AM",
       isRead: true,
       isFromMe: false,
     },
-    property: "Modern Apartment",
+    property: "Modern Luxury Apartment",
     unreadCount: 0,
   },
   {
     id: "2",
     user: {
-      name: "Alex Thompson",
+      name: "Vikram Mehta",
       avatar: "/placeholder.svg?height=40&width=40",
       isOnline: false,
     },
     lastMessage: {
-      text: "The camera is available for rent starting next week. Let me know if you're interested.",
+      text: "The Sony Alpha camera is available for rent starting next week. Let me know if you're interested.",
       time: "Yesterday",
       isRead: false,
       isFromMe: true,
     },
-    property: "Professional DSLR Camera",
+    property: "Sony Alpha A7III Camera",
     unreadCount: 0,
   },
   {
     id: "3",
     user: {
-      name: "Robert Garcia",
+      name: "Rajesh Mehta",
       avatar: "/placeholder.svg?height=40&width=40",
       isOnline: true,
     },
     lastMessage: {
-      text: "Thanks for your interest in the townhouse. When would you like to move in?",
+      text: "Thanks for your interest in the villa. When would you like to move in?",
       time: "Yesterday",
       isRead: false,
       isFromMe: true,
     },
-    property: "Cozy Townhouse",
+    property: "Spacious Family Villa",
     unreadCount: 0,
   },
   {
     id: "4",
     user: {
-      name: "Emily Rodriguez",
+      name: "Neha Kapoor",
       avatar: "/placeholder.svg?height=40&width=40",
       isOnline: false,
     },
     lastMessage: {
-      text: "I've sent you the details about the DJ equipment. Let me know if you have any questions.",
+      text: "I've sent you the details about the DJ sound system. Let me know if you have any questions.",
       time: "Mar 20",
       isRead: true,
       isFromMe: false,
     },
-    property: "DJ Equipment",
+    property: "DJ Sound System",
     unreadCount: 2,
   },
 ]
 
 // Static messages for the selected conversation
-const messageHistory = {
+const messageHistory: Record<string, Array<{id: string; text: string; time: string; isFromMe: boolean}>> = {
   "1": [
     {
       id: "1",
-      text: "Hi, I'm interested in your Modern Apartment listing. Is it still available?",
+      text: "Hi, I'm interested in your Modern Luxury Apartment in Koramangala. Is it still available?",
       time: "10:30 AM",
       isFromMe: false,
     },
@@ -106,7 +106,7 @@ const messageHistory = {
     },
     {
       id: "5",
-      text: "That would be great! Do you have any availability this weekend?",
+      text: "That would be great! Do you have any availability this weekend? I work at an IT company in Whitefield, so preferably Sunday would work best for me.",
       time: "10:45 AM",
       isFromMe: false,
     },
@@ -114,7 +114,7 @@ const messageHistory = {
   "2": [
     {
       id: "1",
-      text: "Hello, I saw your listing for the DSLR camera. Is it available for rent next weekend?",
+      text: "Hello, I saw your listing for the Sony Alpha camera. Is it available for rent next weekend? I need it for a pre-wedding shoot in Cubbon Park.",
       time: "Yesterday, 2:15 PM",
       isFromMe: false,
     },
@@ -128,25 +128,25 @@ const messageHistory = {
   "3": [
     {
       id: "1",
-      text: "Hi, I'm interested in renting your townhouse. Is it pet-friendly?",
+      text: "Hi, I'm interested in renting your villa in HSR Layout. Is it pet-friendly?",
       time: "Yesterday, 9:20 AM",
       isFromMe: false,
     },
     {
       id: "2",
-      text: "Yes, the townhouse is pet-friendly! We allow cats and dogs under 50 pounds.",
+      text: "Yes, the villa is pet-friendly! We allow cats and dogs under 20 kg.",
       time: "Yesterday, 10:05 AM",
       isFromMe: true,
     },
     {
       id: "3",
-      text: "That's perfect! I have a small dog. When can I see the place?",
+      text: "That's perfect! I have a small dog. Does the villa have 24x7 water supply and power backup?",
       time: "Yesterday, 10:30 AM",
       isFromMe: false,
     },
     {
       id: "4",
-      text: "Thanks for your interest in the townhouse. When would you like to move in?",
+      text: "Thanks for your interest in the villa. Yes, there's 24x7 water supply with borewell backup and power backup for essential appliances. When would you like to move in?",
       time: "Yesterday, 11:15 AM",
       isFromMe: true,
     },
@@ -154,39 +154,27 @@ const messageHistory = {
   "4": [
     {
       id: "1",
-      text: "Hi, do you have the DJ equipment available for an event on April 15th?",
-      time: "Mar 20, 1:10 PM",
-      isFromMe: false,
+      text: "Hi, do you have the DJ sound system available for a wedding on March 30th?",
+      time: "Mar 20, 9:15 AM",
+      isFromMe: true,
     },
     {
-      id: "2",
-      text: "Yes, it's available on that date. What kind of event are you planning?",
-      time: "Mar 20, 1:45 PM",
-      isFromMe: true,
+      id: "2", 
+      text: "Yes, the sound system is available. What venue is this for?",
+      time: "Mar 20, 10:30 AM",
+      isFromMe: false,
     },
     {
       id: "3",
-      text: "It's for a wedding reception. Can you tell me more about what's included?",
-      time: "Mar 20, 2:20 PM",
-      isFromMe: false,
+      text: "It's for a wedding reception at Taj MG Road. Would you offer installation support as well?",
+      time: "Mar 20, 10:45 AM",
+      isFromMe: true,
     },
     {
       id: "4",
-      text: "I've sent you the details about the DJ equipment. Let me know if you have any questions.",
-      time: "Mar 20, 3:05 PM",
+      text: "I've sent you the details about the DJ sound system. Let me know if you have any questions.",
+      time: "Mar 20, 11:30 AM",
       isFromMe: false,
-    },
-    {
-      id: "5",
-      text: "The package includes a Pioneer DJ controller, 2 speakers, a subwoofer, and headphones.",
-      time: "Mar 20, 3:10 PM",
-      isFromMe: false,
-    },
-    {
-      id: "6",
-      text: "Do you also provide setup and technical support?",
-      time: "Mar 20, 3:30 PM",
-      isFromMe: true,
     },
   ],
 }
