@@ -1,133 +1,151 @@
 # Tor-Rent: Redefining Rentals with Blockchain
 
-**Abstract**
-
+## Abstract
 Tor-Rent is a decentralized rental application that leverages blockchain technology to provide a secure, transparent, and efficient rental experience. By integrating React (frontend), Node.js (backend), MongoDB (database), and Web3 (blockchain), along with Metamask for authentication and Polygon Ethereum for payments, Tor-Rent addresses common challenges in the rental industry, such as fraud, delayed payments, and disputes.
-
-**Problem Statement**
-
-The rental industry is plagued by issues like rental fraud, delayed payments, and frequent disputes between tenants and landlords. Traditional rental agreements are susceptible to forgery, challenging to enforce, and often lack transparency, leading to inefficiencies and mistrust among parties.
-
-**Solution**
-
-Tor-Rent introduces a blockchain-based rental agreement system that ensures secure, tamper-proof, and automated contracts. By leveraging smart contracts, the system offers:
-
-- **Transparent Agreements**: Rental agreements are securely stored on blockchain ledgers, preventing unauthorized modifications or tampering. Once recorded, the contract remains permanent, verifiable, and legally binding.
-
-- **Automated Payments and Deposits**: Smart contracts automate rent payments and security deposits, executing transactions based on predefined conditions, eliminating delays, missed payments, and disputes over deposit refunds.
-
-- **Decentralized Dispute Resolution**: A built-in arbitration mechanism efficiently resolves rental conflicts, involving community governance or pre-assigned mediators, reducing the need for costly legal proceedings.
-
-- **Identity Verification and Trust**: Decentralized identity verification ensures that only legitimate individuals engage in rental transactions, enhancing trust and security.
-
-- **Smart Contract Enforcement**: Rental agreements are self-executing, ensuring compliance with contract terms. In case of a breach, smart contracts can automatically trigger deposit deductions, penalty fees, or lease termination.
-
-**Key Features**
-
-- **Seamless Property Listings**: Users can list, browse, and rent properties efficiently, ensuring a hassle-free rental experience.
-
-- **User Dashboard**: Track rental history, payments, and property listings in real-time.
-
-- **Trustless Security**: Eliminates intermediaries and reduces fraud risks through blockchain validation.
-
-- **Modern & Responsive UI**: Aesthetic and intuitive frontend built with React.
-
-**Tech Stack**
-
-- **React.js**: A JavaScript library for building user interfaces.
-
-- **Node.js**: JavaScript runtime environment for server-side scripting.
-
-- **Express.js**: Fast, unopinionated web framework for Node.js.
-
-- **MongoDB**: NoSQL database for flexible and scalable data storage.
-
-- **Solidity**: Smart contract programming language for Ethereum.
-
-- **Web3.js**: JavaScript library for interacting with Ethereum blockchain.
-
-- **Hardhat**: Ethereum development environment and testing framework.
-
-- **Metamask**: Browser extension for managing Ethereum wallets.
-
-- **Polygon**: Layer 2 scaling solution for Ethereum.
-
-- **Tailwind CSS**: A utility-first CSS framework for styling.
-
-**Smart Contracts Overview**
-
-Tor-Rent is powered by six smart contracts that handle different functionalities:
-
-1. **RentalAgreement.sol**: Manages rental agreements, ensuring immutability and transparency.
-
-2. **PaymentProcessor.sol**: Automates rent payments and deposit transactions securely.
-
-3. **DisputeResolution.sol**: Implements decentralized arbitration to resolve conflicts fairly.
-
-4. **IdentityVerification.sol**: Handles landlord and tenant verification using blockchain credentials.
-
-5. **PropertyListing.sol**: Facilitates property listings, updates, and availability management.
-
-6. **Enforcement.sol**: Ensures contract compliance by enforcing penalties, lease terminations, and security deposit deductions.
-
-**System Architecture**
-
-1. **Property Registration**: Landlords deploy contracts containing property details, including ID, description, rental price, availability status, and owner’s wallet address. Metadata (images, descriptions) is stored on decentralized storage (IPFS/Arweave), with only the URL stored on-chain.
-
-2. **Booking & Payment Processing**: Tenants initiate a booking by interacting with the smart contract, sending the required rental payment. The contract verifies payment and availability, locking the payment in escrow until the rental period starts.
-
-3. **Agreement Enforcement & Termination**: Smart contracts define rental terms (price, duration, conditions) and enforce them without third-party intervention. Contracts can be terminated or renewed automatically based on predefined conditions.
-
-4. **Payment Release**: When the rental period starts, the smart contract releases funds to the landlord’s wallet.
-
-5. **Dispute Resolution**: If disputes arise, the contract includes predefined mechanisms for refunds or arbitration. Transaction history is stored on-chain, providing a transparent record of all interactions.
-
-6. **Security & Immutability**: Once deployed, contracts cannot be altered, ensuring integrity and security, preventing tampering, forgery, and unauthorized modifications.
-
-**Impact**
-
-Tor-Rent aims to revolutionize the rental marketplace by providing a decentralized, transparent, and secure platform for apartment listings and bookings. By leveraging blockchain technology and decentralized storage systems, the project ensures:
-
-- **Trust and Transparency**: Smart contracts eliminate the need for intermediaries, ensuring fair and tamper-proof transactions.
-
-- **Data Security**: Decentralized storage secures file metadata, preventing unauthorized modifications.
-
-- **Efficient Apartment Management**: MongoDB stores apartment data, making retrieval and updates efficient and scalable.
-
-- **Cost-Effective Transactions**: Utilizing Polygon for reduced transaction costs, making the solution affordable for users.
-
-- **Enhanced User Experience**: Seamless Web3 authentication via Metamask, promoting user privacy and control.
-
-**Unique Features for Tor-Rent**
-
-To further enhance the Tor-Rent platform, the following unique features can be considered:
-
-**For Tenants:**
-
-1. **Gamified Loyalty Programs**: Implement reward systems where tenants earn points for timely payments, lease renewals, or participating in community events. These points can be redeemed for discounts, upgrades, or other perks, increasing engagement and satisfaction. :contentReference[oaicite:0]{index=0}
-
-2. **Augmented Reality (AR) Property Tours**: Allow prospective tenants to take immersive virtual tours of properties using AR technology, providing a realistic viewing experience without the need for physical visits. :contentReference[oaicite:1]{index=1}
-
-3. **Community Engagement Platforms**: Create chat forums within the application where tenants can interact, share experiences, and organize community events, fostering a sense of community and belonging.
-
-**For Landlords:**
-
-1. **Fractional Property Investment**: Enable landlords to tokenize their properties, allowing multiple investors to own fractions of a property, thereby increasing investment opportunities and liquidity. :contentReference[oaicite:4]{index=4}
-
-2. **Dynamic Pricing Models**: Implement AI-driven pricing strategies that adjust rental prices based on market demand, property features, and seasonal trends, optimizing occupancy rates and revenue.
-
-3. **Tenant Screening and Rating Systems**: Develop a decentralized rating system where
-::contentReference[oaicite:5]{index=5}
 
 ---
 
-**Additional features**
- 
-- User should be able to download the rental aggreement
-- the community discussion forum will be anonymous
-- and the chat feature between tenant and landlord should not be anonymous
-- tentants should be able to add the rating to the property which also should be anonymous should be displayed in semi-circle pie chart
-- Ai chatbot
-- services option should be given like plumber, pest control,electrician, etc.
-- properties map view
-- for tenant: on or before time rent pay they will be getting rentocoin which they can redeem as a zomato/swiggy/zepto coupon or they can also redem them as real currency or adjacent crypto. for late payment rentocoin would be deducted
+## Problem Statement
+The rental industry is plagued by issues like rental fraud, delayed payments, lack of item-specific rental systems, and frequent disputes between tenants and landlords. Traditional rental agreements are susceptible to forgery, challenging to enforce, and often lack transparency, leading to inefficiencies and mistrust among parties. Additionally, current rental platforms are primarily focused on apartment rentals, neglecting a broader market of various items available for rent, such as vehicles, gadgets, and furniture.
+
+---
+
+## Solution
+Tor-Rent introduces a blockchain-based rental agreement system that ensures secure, tamper-proof, and automated contracts. By leveraging smart contracts, the system offers:
+
+- **Transparent Agreements**: Immutable and verifiable agreements stored on blockchain ledgers.
+- **Automated Payments and Deposits**: Automatic rent payments and deposit refunds via smart contracts.
+- **Decentralized Dispute Resolution**: Efficient arbitration through community governance or assigned mediators.
+- **Identity Verification and Trust**: Enhanced security via decentralized identity systems.
+- **Smart Contract Enforcement**: Automated compliance enforcement with pre-defined rules.
+
+---
+
+## Key Features
+- **Seamless Property Listings**
+- **User Dashboard**
+- **Trustless Security**
+- **Modern & Responsive UI**
+- **AI Chatbot (Gemini)**
+- **Services Marketplace (Plumber, Electrician, etc.)**
+- **Properties Map View**
+- **Property Comparison Tool**
+- **Issue Reporting System**
+- **Community Discussion Forum (Anonymous)**
+- **Tenant-Landlord Chat (Non-Anonymous)**
+- **Gamified Loyalty System (Rentocoin, Badges)**
+- **Multi-Item Rental Support:** Enhanced system to support rentals beyond apartments, such as cars, equipment, and other rentable items, with tailored booking processes.
+- **Dual Login System:** Landlord and Tenant roles with distinct functionalities, ensuring a seamless and personalized user experience.
+- **Secure Data Management:** Data stored in MongoDB for general information and SQLite for gamification features.
+
+---
+
+## Tech Stack
+- **Frontend:** React, Tailwind CSS
+- **Backend:** Node.js, Express, SQLite (Gamification), MongoDB (General Data Storage)
+- **Blockchain:** Solidity, Hardhat, Ethers.js, Polygon
+- **Web3 Integration:** Metamask
+- **File Storage:** Decentralized storage systems (Future enhancement)
+
+---
+
+## Smart Contracts
+1. **RentalAgreement.sol** - Rental agreements handling.
+2. **PaymentProcessor.sol** - Rent and deposit processing.
+3. **DisputeResolution.sol** - Conflict resolution.
+4. **IdentityVerification.sol** - Identity management.
+5. **PropertyListing.sol** - Property listing management.
+6. **Enforcement.sol** - Contract enforcement.
+
+---
+
+## Routes
+### Authentication
+- `POST /api/auth/login` - Login with Metamask.
+- `POST /api/auth/logout` - Logout user.
+
+### Property Management
+- `POST /api/properties` - Add a property.
+- `GET /api/properties` - Retrieve all properties.
+- `GET /api/properties/:id` - Retrieve specific property details.
+- `PUT /api/properties/:id` - Update property details.
+- `DELETE /api/properties/:id` - Delete a property.
+- `POST /api/properties/compare` - Compare multiple properties.
+- `GET /api/properties/available` - View all available properties.
+- `GET /api/properties/map-view` - View properties on map.
+
+### Rental Management
+- `POST /api/rental/book` - Book a property.
+- `POST /api/rental/terminate` - Terminate rental agreement.
+- `POST /api/rental/report-issue` - Report an issue.
+
+### Payment & Rewards
+- `POST /api/payment/pay` - Pay rent via Metamask.
+- `POST /api/payment/redeem-rentocoin` - Redeem Rentocoin.
+- `GET /api/payment/transactions` - View payment transactions.
+
+### Community & Chat
+- `POST /api/community/post` - Create a forum post (Anonymous).
+- `GET /api/community/posts` - Retrieve forum posts.
+- `POST /api/chat/send` - Send a message (Non-Anonymous).
+
+### AI Interaction
+- `POST /api/chatbot` - Interact with AI chatbot.
+
+---
+
+## Database Schema
+### SQLite (Gamification System)
+```sql
+-- Users Table
+CREATE TABLE Users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    wallet_address TEXT,
+    score INTEGER DEFAULT 0
+);
+
+-- Badges Table
+CREATE TABLE Badges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    description TEXT
+);
+
+-- UserBadges Table
+CREATE TABLE UserBadges (
+    user_id INTEGER,
+    badge_id INTEGER,
+    earned_at DATETIME,
+    FOREIGN KEY(user_id) REFERENCES Users(id),
+    FOREIGN KEY(badge_id) REFERENCES Badges(id)
+);
+
+-- Rentocoin Transactions Table
+CREATE TABLE RentocoinTransactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    amount INTEGER,
+    type TEXT, -- 'earn' or 'spend'
+    description TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES Users(id)
+);
+```
+
+---
+
+## Impact
+- **Trust and Transparency:** Immutable transactions and agreements via blockchain.
+- **Data Security:** Decentralized storage systems.
+- **Cost-Effective Transactions:** Reduced fees with Polygon.
+- **Enhanced User Experience:** Modern UI and intuitive interactions.
+
+---
+
+## Future Enhancements
+- Improve AR Property Tours.
+- Enhance AI chatbot capabilities.
+- Expand Services Marketplace.
+- Improve Rental Agreement Download System.
+
