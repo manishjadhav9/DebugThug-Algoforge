@@ -150,58 +150,43 @@ CREATE TABLE RentocoinTransactions (
 - Improve Rental Agreement Download System.
 
 
-Smart Contracts List
-RentalAgreement.sol
+## Smart Contracts List
+**RentalAgreement.sol**
+- Handles creation, modification, and termination of rental agreements.
+- Stores essential rental terms, such as rental amount, deposit, duration, and conditions.
+- Facilitates agreement between Landlords and Tenants with automated enforcement of terms.
 
-Handles creation, modification, and termination of rental agreements.
+**PaymentProcessor.sol**
+- Manages rent payments and deposits.
+- Ensures automated transfer of funds between Tenant and Landlord upon successful transaction.
+- Handles refund of deposits based on predefined conditions.
 
-Stores essential rental terms, such as rental amount, deposit, duration, and conditions.
+**DisputeResolution.sol**
 
-Facilitates agreement between Landlords and Tenants with automated enforcement of terms.
+- Provides decentralized mechanisms for dispute resolution.
+- Allows community voting or assigned mediators to resolve conflicts.
+- Escrow system for holding disputed funds until resolution.
 
-PaymentProcessor.sol
+**IdentityVerification.sol**
 
-Manages rent payments and deposits.
+- Verifies user identities via wallet signatures or third-party integrations.
+- Associates verified identities with rental agreements to prevent fraud.
 
-Ensures automated transfer of funds between Tenant and Landlord upon successful transaction.
+**PropertyListing.sol**
 
-Handles refund of deposits based on predefined conditions.
+- Allows Landlords to create, update, and delete property listings.
+- Stores property details such as description, availability, pricing, etc.
+- Supports multi-item rental listings (apartments, vehicles, gadgets, etc.).
 
-DisputeResolution.sol
+**Enforcement.sol**
 
-Provides decentralized mechanisms for dispute resolution.
+- Enforces contract terms like rental duration, payments, and conditions.
+- Automatically penalizes parties for breaches in agreement.
+- Supports blacklist functionality for fraudulent users.
 
-Allows community voting or assigned mediators to resolve conflicts.
+**Gamification.sol**
 
-Escrow system for holding disputed funds until resolution.
-
-IdentityVerification.sol
-
-Verifies user identities via wallet signatures or third-party integrations.
-
-Associates verified identities with rental agreements to prevent fraud.
-
-PropertyListing.sol
-
-Allows Landlords to create, update, and delete property listings.
-
-Stores property details such as description, availability, pricing, etc.
-
-Supports multi-item rental listings (apartments, vehicles, gadgets, etc.).
-
-Enforcement.sol
-
-Enforces contract terms like rental duration, payments, and conditions.
-
-Automatically penalizes parties for breaches in agreement.
-
-Supports blacklist functionality for fraudulent users.
-
-Gamification.sol
-
-Manages Rentocoin, Badges, and XP rewards.
-
-Issues rewards based on user activities like timely payments, providing good service, etc.
-
-Allows redemption of Rentocoin for benefits or services.
+- Manages Rentocoin, Badges, and XP rewards.
+- Issues rewards based on user activities like timely payments, providing good service, etc.
+- Allows redemption of Rentocoin for benefits or services.
 
