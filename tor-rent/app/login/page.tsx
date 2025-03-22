@@ -22,8 +22,12 @@ export default function LoginPage() {
     // Simulate Metamask connection
     setTimeout(() => {
       setIsLoading(false)
-      // Redirect to dashboard
-      router.push("/dashboard")
+      // Redirect to appropriate dashboard based on user type
+      if (userType === "landlord") {
+        router.push("/dashboard/landlord")
+      } else {
+        router.push("/dashboard")
+      }
     }, 1500)
   }
 
@@ -33,8 +37,12 @@ export default function LoginPage() {
     // Simulate login
     setTimeout(() => {
       setIsLoading(false)
-      // Redirect to dashboard
-      router.push("/dashboard")
+      // Redirect to appropriate dashboard based on user type
+      if (userType === "landlord") {
+        router.push("/dashboard/landlord")
+      } else {
+        router.push("/dashboard")
+      }
     }, 1500)
   }
 
