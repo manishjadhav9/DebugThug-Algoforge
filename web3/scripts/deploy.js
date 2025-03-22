@@ -7,6 +7,20 @@ async function main() {
   const [deployer] = await hre.ethers.getSigners();
   console.log(`Deploying contracts with the account: ${deployer.address}`);
 
+  // Deploy Rentocoin first (for ServiceMarketplace)
+  const Rentocoin = await hre.ethers.getContractFactory("Rentocoin");
+  const rentocoin = await Rentocoin.deploy(1000000); // 1 million initial supply
+  await rentocoin.waitForDeployment();
+  const rentocoinAddress = await rentocoin.getAddress();
+  console.log(`Rentocoin deployed to: ${rentocoinAddress}`);
+
+  // Deploy ServiceMarketplace
+  const ServiceMarketplace = await hre.ethers.getContractFactory("ServiceMarketplace");
+  const serviceMarketplace = await ServiceMarketplace.deploy(rentocoinAddress);
+  await serviceMarketplace.waitForDeployment();
+  const serviceMarketplaceAddress = await serviceMarketplace.getAddress();
+  console.log(`ServiceMarketplace deployed to: ${serviceMarketplaceAddress}`);
+
   // Deploy Identity Verification
   const IdentityVerification = await hre.ethers.getContractFactory("IdentityVerification");
   const identityVerification = await IdentityVerification.deploy();
@@ -62,6 +76,8 @@ async function main() {
     network: hre.network.name,
     timestamp: new Date().toISOString(),
     contracts: {
+      Rentocoin: rentocoinAddress,
+      ServiceMarketplace: serviceMarketplaceAddress,
       IdentityVerification: identityVerificationAddress,
       PropertyListing: propertyListingAddress,
       RentalAgreement: rentalAgreementAddress,

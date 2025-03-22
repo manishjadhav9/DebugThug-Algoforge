@@ -5,12 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "hardhat test",
+    "test:service": "hardhat test test/ServiceMarketplace.test.js",
     "compile": "hardhat compile",
     "generate-abi": "node scripts/generate-abi.js",
+    "generate-service-abi": "node scripts/generate-service-marketplace-abi.js",
     "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
     "deploy:localhost": "hardhat run scripts/deploy.js --network localhost",
+    "deploy-service:localhost": "hardhat run scripts/deploy-service-marketplace.js --network localhost",
     "interact:localhost": "hardhat run scripts/interact.js --network localhost",
-    "interact-all:localhost": "hardhat run scripts/interact-all.js --network localhost"
+    "interact-all:localhost": "hardhat run scripts/interact-all.js --network localhost",
+    "interact-service:localhost": "hardhat run scripts/interact-service-marketplace.js --network localhost",
+    "node": "hardhat node"
   },
   "keywords": [],
   "author": "",
