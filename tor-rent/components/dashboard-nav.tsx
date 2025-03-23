@@ -21,7 +21,8 @@ import {
   Star,
   FileText,
   Shield,
-  Gift
+  Gift,
+  Blocks
 } from "lucide-react"
 
 interface DashboardNavProps {
@@ -63,6 +64,11 @@ export function DashboardNav({ userType = "tenant", isMobile = false, isOpen = f
         icon: <Wallet className="mr-2 h-4 w-4" />,
       },
       {
+        title: "Wallet Funding",
+        href: "/dashboard/wallet-funding",
+        icon: <Wallet className="mr-2 h-4 w-4" />,
+      },
+      {
         title: "Maintenance Requests",
         href: "/dashboard/maintenance",
         icon: <Wrench className="mr-2 h-4 w-4" />,
@@ -76,6 +82,11 @@ export function DashboardNav({ userType = "tenant", isMobile = false, isOpen = f
         title: "Documents",
         href: "/dashboard/documents",
         icon: <FileText className="mr-2 h-4 w-4" />,
+      },
+      {
+        title: "Blockchain",
+        href: "/dashboard/blockchain",
+        icon: <Blocks className="mr-2 h-4 w-4" />,
       },
       {
         title: "Insurance",
@@ -120,6 +131,11 @@ export function DashboardNav({ userType = "tenant", isMobile = false, isOpen = f
         icon: <Wallet className="mr-2 h-4 w-4" />,
       },
       {
+        title: "Wallet Funding",
+        href: "/dashboard/wallet-funding",
+        icon: <Wallet className="mr-2 h-4 w-4" />,
+      },
+      {
         title: "Maintenance",
         href: "/dashboard/landlord/maintenance",
         icon: <Wrench className="mr-2 h-4 w-4" />,
@@ -133,6 +149,11 @@ export function DashboardNav({ userType = "tenant", isMobile = false, isOpen = f
         title: "Analytics",
         href: "/dashboard/landlord/analytics",
         icon: <PieChart className="mr-2 h-4 w-4" />,
+      },
+      {
+        title: "Blockchain",
+        href: "/dashboard/landlord/blockchain",
+        icon: <Blocks className="mr-2 h-4 w-4" />,
       },
       {
         title: "Settings",

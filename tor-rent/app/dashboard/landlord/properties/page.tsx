@@ -57,6 +57,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { PropertyCard } from "@/components/property-card"
 import { toast } from "@/hooks/use-toast"
+import { formatDate } from "@/lib/utils/date"
 
 // Mock property data
 const mockProperties = [
@@ -381,7 +382,7 @@ export default function LandlordPropertiesPage() {
                     <p className="text-gray-500">
                       Lease ends:{" "}
                       <span className="text-gray-700">
-                        {new Date(property.leaseEnd).toLocaleDateString()}
+                        {formatDate(property.leaseEnd)}
                       </span>
                     </p>
                   </div>
@@ -446,7 +447,7 @@ export default function LandlordPropertiesPage() {
                   <TableCell>{property.tenantName || "-"}</TableCell>
                   <TableCell>
                     {property.leaseEnd
-                      ? new Date(property.leaseEnd).toLocaleDateString()
+                      ? formatDate(property.leaseEnd)
                       : "-"}
                   </TableCell>
                   <TableCell className="text-right">

@@ -41,6 +41,7 @@ import {
   AlertTriangle,
   Clock
 } from "lucide-react"
+import { PropertyBlockchainCard } from "@/components/blockchain/property-blockchain-card"
 
 // Mock property data
 const mockProperties = [
@@ -561,6 +562,26 @@ export default function PropertyDetailPage() {
               </div>
             </CardContent>
           </Card>
+          
+          <PropertyBlockchainCard 
+            property={{
+              id: property.id,
+              title: property.title,
+              blockchainId: property.blockchainId || null,
+              location: property.location,
+              price: property.price,
+              bedrooms: property.bedrooms,
+              bathrooms: property.bathrooms,
+              area: property.area,
+              areaUnit: property.areaUnit,
+              agreements: []
+            }}
+            tenants={[
+              property.tenant ? 
+                { id: property.tenant.id, name: property.tenant.name } : 
+                undefined
+            ].filter(Boolean)}
+          />
         </div>
       </div>
     </div>
