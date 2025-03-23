@@ -22,8 +22,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ArrowLeft, Plus, Upload, X } from "lucide-react"
+import { ArrowLeft, Plus, Upload, X, Loader2 } from "lucide-react"
 import { PropertyLocationMap } from "@/components/property-location-map"
+import { toast } from "@/components/ui/use-toast"
+import { useUser } from "@/hooks/useUser"
+import { addProperty } from "@/lib/helpers/property-helper"
 
 // Form validation schema
 const propertyFormSchema = z.object({
@@ -72,9 +75,15 @@ const amenitiesOptions = [
 
 export default function AddPropertyPage() {
   const router = useRouter()
+  const { user } = useUser()
+  const userId = user?.id || 'landlord-1' // Fallback ID for development
   const [images, setImages] = useState<{ url: string; file?: File }[]>([])
   const [activeTab, setActiveTab] = useState("basicInfo")
   const [location, setLocation] = useState({ latitude: 12.9716, longitude: 77.5946 }) // Default: Bangalore
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Console log for debugging
+  console.log("Rendering AddPropertyPage, userId:", userId)
 
   // Initialize form
   const form = useForm<z.infer<typeof propertyFormSchema>>({
@@ -99,28 +108,133 @@ export default function AddPropertyPage() {
   })
 
   // Handle form submission
-  const onSubmit = (data: z.infer<typeof propertyFormSchema>) => {
-    // In a real application, we would upload the images and send the data to the server
+  const onSubmit = async (data: z.infer<typeof propertyFormSchema>) => {
+    console.log("Form submission triggered!", data)
+    try {
+      // Set submitting state
+      setIsSubmitting(true)
+      
+      // Additional validation for description length
+      if (data.description.length < 20) {
+        console.log("Description too short");
+        toast({
+          title: "Description Too Short",
+          description: "Please ensure your property description is at least 20 characters long.",
+          variant: "destructive"
+        });
+        setActiveTab("basicInfo");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Validate images - this is critical
+      if (images.length === 0) {
+        console.log("No images uploaded")
+        toast({
+          title: "Error",
+          description: "Please upload at least one image of the property.",
+          variant: "destructive"
+        })
+        setActiveTab("media")
+        setIsSubmitting(false)
+        return
+      }
+      
+      // Log form data
     console.log("Form data:", data)
     console.log("Images:", images)
     console.log("Location:", location)
 
-    // Simulate successful submission
+      // Create a complete property data object
+      const propertyData: AddPropertyInput = {
+        ...data,
+        images,
+        coordinates: location,
+        userId: userId || 'landlord-1' // Ensure there's always a userId
+      }
+      
+      // Add property using our helper
+      console.log("Submitting property data:", propertyData)
+      
+      // Show a temporary toast during submission
+      toast({
+        title: "Adding Property",
+        description: "Your property is being added...",
+      })
+      
+      // Call the property helper
+      const result = await addProperty(propertyData)
+      console.log("Property added successfully:", result)
+      
+      // Show success toast
+      toast({
+        title: "Property Added Successfully",
+        description: result.blockchainId 
+          ? `Property added with ID: ${result.id} and blockchain ID: ${result.blockchainId}` 
+          : `Property added with ID: ${result.id}`,
+        variant: "default",
+      })
+      
+      // Show a more visible alert
+      alert(`Property "${data.title}" has been successfully listed!\nProperty ID: ${result.id}${result.blockchainId ? `\nBlockchain ID: ${result.blockchainId}` : ''}`)
+      
+      // Redirect to properties page after a short delay to allow the user to see the success message
     setTimeout(() => {
       router.push("/dashboard/landlord/properties?success=true")
-    }, 1500)
+      }, 1000)
+      
+    } catch (error) {
+      console.error("Error adding property:", error)
+      
+      // Show error toast
+      toast({
+        title: "Error",
+        description: error instanceof Error 
+          ? `Failed to add property: ${error.message}` 
+          : "Failed to add property. Please try again.",
+        variant: "destructive"
+      })
+      
+      // Reset submitting state
+      setIsSubmitting(false)
+    }
   }
 
   // Handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newImages = Array.from(e.target.files).map((file) => ({
-        url: URL.createObjectURL(file),
-        file,
-      }))
-      setImages([...images, ...newImages])
+    console.log("Image upload triggered");
+    
+    if (!e.target.files || e.target.files.length === 0) {
+      console.log("No files selected");
+      return;
     }
-  }
+
+    // Get selected files
+    const files = Array.from(e.target.files);
+    console.log("Files selected:", files.length);
+    
+    // Process each file
+    const newImages = files.map(file => {
+      // Create a URL for the image
+      const url = URL.createObjectURL(file);
+      console.log("Created URL for image:", url);
+      return { url, file };
+    });
+    
+    // Add new images to existing images
+    setImages(prev => [...prev, ...newImages]);
+    
+    // Show success toast if images uploaded
+    if (newImages.length > 0) {
+      toast({
+        title: "Images Uploaded",
+        description: `Successfully uploaded ${newImages.length} image${newImages.length > 1 ? 's' : ''}.`,
+      });
+    }
+    
+    // Reset the input value to allow selecting the same file again
+    e.target.value = '';
+  };
 
   // Remove image
   const removeImage = (index: number) => {
@@ -148,7 +262,10 @@ export default function AddPropertyPage() {
         </TabsList>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={(e) => {
+            console.log("Raw form submit event triggered");
+            form.handleSubmit(onSubmit)(e);
+          }} className="space-y-8">
             <TabsContent value="basicInfo" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
@@ -250,25 +367,46 @@ export default function AddPropertyPage() {
                   name="description"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>Description <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Describe your property in detail..."
+                          placeholder="Example: This well-maintained apartment features a spacious living room with excellent natural lighting. Located close to shopping and public transport. Perfect for professionals or small families."
                           className="h-32"
                           {...field}
                         />
                       </FormControl>
                       <FormDescription>
                         Include key features, nearby amenities, and other selling points.
+                        <span className="text-gray-500 ml-2">
+                          {field.value.length}/20 characters (minimum)
+                        </span>
                       </FormDescription>
+                      <div className="mt-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => {
+                            form.setValue("description", "This is a spacious apartment with modern amenities located in a prime area. Close to restaurants, shopping centers, and public transportation.");
+                          }}
+                        >
+                          Use Sample Description
+                        </Button>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
 
-              <div className="flex justify-end">
-                <Button type="button" onClick={() => setActiveTab("details")}>
+              <div className="flex justify-between">
+                <div />
+                <Button 
+                  type="button"
+                  onClick={() => setActiveTab("details")}
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
                   Next: Details & Amenities
                 </Button>
               </div>
@@ -471,7 +609,11 @@ export default function AddPropertyPage() {
                 <Button type="button" variant="outline" onClick={() => setActiveTab("basicInfo")}>
                   Back
                 </Button>
-                <Button type="button" onClick={() => setActiveTab("media")}>
+                <Button 
+                  type="button"
+                  onClick={() => setActiveTab("media")}
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
                   Next: Media & Location
                 </Button>
               </div>
@@ -537,8 +679,79 @@ export default function AddPropertyPage() {
                 <Button type="button" variant="outline" onClick={() => setActiveTab("details")}>
                   Back
                 </Button>
-                <Button type="submit" className="bg-orange-500 hover:bg-orange-600">
-                  List Property
+                <Button 
+                  type="button"
+                  className="bg-green-600 hover:bg-green-700 px-8"
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    console.log("SUBMIT button clicked manually, form state:", form.formState);
+                    // First check if the form is valid
+                    form.trigger().then(isValid => {
+                      console.log("Form validation result:", isValid);
+                      if (isValid) {
+                        // If valid, manually submit the form
+                        form.handleSubmit(onSubmit)();
+                      } else {
+                        // Show validation errors and navigate to proper tab
+                        const errors = form.formState.errors;
+                        console.log("Form validation errors:", errors);
+                        
+                        // Check for description error specifically, since that's a common issue
+                        if (errors.description) {
+                          setActiveTab("basicInfo");
+                          toast({
+                            title: "Description Too Short",
+                            description: "Please ensure your property description is at least 20 characters long.",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+                        
+                        // Determine which tab to show based on errors
+                        if (errors.title || errors.propertyType || errors.location || errors.price || errors.priceUnit) {
+                          setActiveTab("basicInfo");
+                          toast({
+                            title: "Validation Error",
+                            description: "Please fill in all required fields in the Basic Info section",
+                            variant: "destructive"
+                          });
+                        } else if (errors.bedrooms || errors.bathrooms || errors.area || errors.areaUnit || 
+                            errors.furnished || errors.availableFrom || errors.minimumLeasePeriod || errors.leasePeriodUnit) {
+                          setActiveTab("details");
+                          toast({
+                            title: "Validation Error",
+                            description: "Please fill in all required fields in the Details section",
+                            variant: "destructive"
+                          });
+                        } else {
+                          // No images check
+                          if (images.length === 0) {
+                            toast({
+                              title: "Validation Error",
+                              description: "Please upload at least one image of the property",
+                              variant: "destructive"
+                            });
+                          } else {
+                            // If no specific errors detected but form is invalid
+                            toast({
+                              title: "Validation Error",
+                              description: "Please fill in all required fields",
+                              variant: "destructive"
+                            });
+                          }
+                        }
+                      }
+                    });
+                  }}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Adding Property...
+                    </>
+                  ) : (
+                    "Publish Property"
+                  )}
                 </Button>
               </div>
             </TabsContent>

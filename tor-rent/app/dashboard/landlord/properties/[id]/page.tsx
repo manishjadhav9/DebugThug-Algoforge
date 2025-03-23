@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -39,106 +39,142 @@ import {
   SquareCode,
   CheckCircle,
   AlertTriangle,
-  Clock
+  Clock,
+  Loader2
 } from "lucide-react"
 import { PropertyBlockchainCard } from "@/components/blockchain/property-blockchain-card"
+import { getPropertyById, createTestProperty } from "@/lib/helpers/property-helper"
+import { toast } from "@/components/ui/use-toast"
 
-// Mock property data
-const mockProperties = [
-  {
-    id: "prop-1",
-    title: "Luxury Villa with Pool",
-    location: "Whitefield, Bangalore",
-    address: "123 Palm Avenue, Whitefield, Bangalore 560066",
-    price: 125000,
-    priceUnit: "month",
-    formattedPrice: "₹1,25,000/month",
-    images: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1600585154526-f0c7992d0bb9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-      "https://images.unsplash.com/photo-1600585154526-f0c7992d0bb9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80"
-    ],
-    description: "A luxurious villa located in the prestigious Whitefield area. This fully furnished property features a private swimming pool, spacious living areas, modern kitchen, and beautifully landscaped gardens. Perfect for executives and families looking for a premium lifestyle.",
-    status: "active",
-    createdAt: "2023-11-15",
-    propertyType: "villa",
-    bedrooms: 4,
-    bathrooms: 4.5,
-    area: 3200,
-    areaUnit: "sqft",
-    amenities: ["Swimming Pool", "Garden", "Gym", "Security", "Parking", "Furnished", "Air Conditioning", "Power Backup"],
-    coordinates: {
-      latitude: 12.9698,
-      longitude: 77.7500
-    },
-    tenant: {
-      id: "tenant-1",
-      name: "Priya Kumar",
-      email: "priya.kumar@example.com",
-      phone: "+91 98765 43210",
-      avatar: "/avatars/priya.jpg",
-      avatarFallback: "PK",
-      credScore: 95,
-      leaseStart: "2023-12-31",
-      leaseEnd: "2024-12-31",
-      securityDeposit: 250000
-    },
-    maintenance: [
-      {
-        id: "issue-1",
-        title: "AC not working",
-        description: "The AC in the master bedroom is not cooling properly.",
-        priority: "high",
-        status: "reported",
-        reportedDate: "2024-03-10"
-      },
-      {
-        id: "issue-2",
-        title: "Water leakage in kitchen",
-        description: "There's water leaking from the sink pipe in the kitchen.",
-        priority: "medium",
-        status: "inProgress",
-        reportedDate: "2024-03-08",
-        scheduledDate: "2024-03-12"
-      }
-    ],
-    paymentHistory: [
-      {
-        id: "payment-1",
-        amount: "₹1,25,000",
-        dueDate: "2024-03-01",
-        paidDate: "2024-03-01",
-        status: "completed",
-        method: "bank"
-      },
-      {
-        id: "payment-6",
-        amount: "₹1,25,000",
-        dueDate: "2024-02-01",
-        paidDate: "2024-02-05",
-        status: "completed",
-        method: "bank"
-      },
-      {
-        id: "payment-upcoming",
-        amount: "₹1,25,000",
-        dueDate: "2024-04-01",
-        paidDate: null,
-        status: "upcoming",
-        method: null
-      }
-    ]
-  }
-]
+// Removed mock properties data
 
 export default function PropertyDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const propertyId = params.id as string
   
-  const property = mockProperties.find(p => p.id === propertyId) || mockProperties[0]
+  const [property, setProperty] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [activeImage, setActiveImage] = useState(0)
   const [activeTab, setActiveTab] = useState("overview")
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch the property data
+  useEffect(() => {
+    async function fetchProperty() {
+      try {
+        setLoading(true)
+        console.log("Fetching property with ID:", propertyId)
+        
+        // Debug: Check if the property ID format is as expected
+        console.log("Property ID type:", typeof propertyId)
+        console.log("Property ID value:", propertyId)
+        
+        // First attempt to create the test property
+        if (process.env.NODE_ENV === 'development') {
+          console.log("PropertyDetailPage: Attempting to create test property first:", propertyId)
+          try {
+            // This will either create a new property or return an existing one
+            const testProperty = await createTestProperty(propertyId)
+            if (testProperty) {
+              console.log("PropertyDetailPage: Test property created or retrieved:", testProperty.id)
+              setProperty(testProperty)
+            }
+          } catch (createError) {
+            console.error("PropertyDetailPage: Error creating test property:", createError)
+          }
+        }
+        
+        // If we don't have a property yet, attempt to get property data
+        if (!property) {
+          console.log("PropertyDetailPage: Attempting to get property:", propertyId)
+          let propertyData = await getPropertyById(propertyId)
+          console.log("PropertyDetailPage: Property retrieval result:", propertyData ? "success" : "not found")
+          
+          // If not found, try with alternate ID formats
+          if (!propertyData) {
+            console.log("Property not found with exact ID, trying alternate formats...")
+            
+            // If propertyId is not prefixed with 'property_', try adding it
+            if (!propertyId.startsWith('property_')) {
+              const alternateId = `property_${propertyId}`
+              console.log("Trying with alternate ID:", alternateId)
+              propertyData = await getPropertyById(alternateId)
+            }
+            
+            // If it's failed and the ID is a string that could be a number, try as number
+            if (!propertyData && !isNaN(Number(propertyId))) {
+              const numericId = Number(propertyId)
+              console.log("Trying with numeric ID:", numericId)
+              propertyData = await getPropertyById(numericId)
+            }
+          }
+          
+          // Create a fallback property with the ID if not found
+          if (!propertyData) {
+            console.error("Property not found for ID:", propertyId)
+            console.log("Creating fallback property with ID:", propertyId)
+            
+            // Add a fallback property to the database for this ID
+            const fallbackProperty = {
+              id: propertyId,
+              title: "Property Not Found",
+              description: "This property could not be found in the database. It may have been deleted or its ID has changed.",
+              location: "Unknown Location",
+              propertyType: "unknown",
+              price: 0,
+              priceUnit: "month",
+              bedrooms: 0,
+              bathrooms: 0,
+              area: 0,
+              areaUnit: "sqft",
+              amenities: [],
+              images: ["/placeholder.svg"],
+              status: "inactive",
+              coordinates: { lat: 0, lng: 0 },
+              landlordId: "unknown",
+              createdAt: new Date().toISOString(),
+              isPlaceholder: true
+            }
+            
+            // Try to save this fallback property for future reference
+            try {
+              const { inmemoryService } = await import("@/lib/services/sqlite-service")
+              await inmemoryService.create('properties', fallbackProperty)
+              console.log("Created fallback property:", fallbackProperty)
+              propertyData = fallbackProperty
+            } catch (saveError) {
+              console.error("Error creating fallback property:", saveError)
+              propertyData = fallbackProperty
+            }
+            
+            toast({
+              title: "Property not found",
+              description: "We couldn't find the property you're looking for. Using placeholder data instead.",
+              variant: "destructive"
+            })
+          }
+          
+          console.log("Property data loaded:", propertyData)
+          setProperty(propertyData)
+        }
+      } catch (error) {
+        console.error("Error fetching property:", error)
+        toast({
+          title: "Error",
+          description: "Failed to load property details. Please try again.",
+          variant: "destructive"
+        })
+        setError(error instanceof Error ? error.message : "Unknown error")
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    if (propertyId) {
+      fetchProperty()
+    }
+  }, [propertyId, router])
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -153,6 +189,7 @@ export default function PropertyDetailPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
+      case "available":
         return <Badge className="bg-green-500">Active</Badge>
       case "pending":
         return <Badge className="bg-orange-500">Pending</Badge>
@@ -200,8 +237,75 @@ export default function PropertyDetailPage() {
     }
   }
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+        <p className="mt-4 text-gray-500">Loading property details...</p>
+      </div>
+    )
+  }
+
+  // Not found state
+  if (!property) {
+    return (
+      <div className="p-6">
+        <Link href="/dashboard/landlord/properties">
+          <Button variant="outline" size="icon">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div className="text-center py-12">
+          <h2 className="text-xl font-bold mb-2">Property not found</h2>
+          <p className="text-gray-500 mb-4">The property you're looking for doesn't exist or has been removed.</p>
+          <Button onClick={() => router.push("/dashboard/landlord/properties")}>
+            Back to properties
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Make sure images is an array
+  const propertyImages = Array.isArray(property.images) && property.images.length > 0 
+    ? property.images 
+    : ["/placeholder.svg"]
+
+  // Provide fallbacks for property fields
+  const safeProperty = {
+    id: property.id || propertyId,
+    title: property.title || "Untitled Property",
+    location: property.location || "No location specified",
+    description: property.description || "No description available",
+    status: property.status || "unknown",
+    createdAt: property.createdAt || new Date().toISOString(),
+    propertyType: property.propertyType || "Other",
+    price: typeof property.price === 'number' ? property.price : 0,
+    priceUnit: property.priceUnit || "month",
+    bedrooms: property.bedrooms || 0,
+    bathrooms: property.bathrooms || 0,
+    area: property.area || 0,
+    areaUnit: property.areaUnit || "sqft",
+    amenities: Array.isArray(property.amenities) ? property.amenities : [],
+    images: Array.isArray(property.images) ? property.images : [],
+    coordinates: property.coordinates || { lat: 0, lng: 0 },
+    blockchainId: property.blockchainId || null,
+    // Optional properties that might not exist
+    tenant: property.tenant || null,
+    maintenance: Array.isArray(property.maintenance) ? property.maintenance : [],
+    paymentHistory: Array.isArray(property.paymentHistory) ? property.paymentHistory : [],
+    ...property // Include all original properties
+  }
+
   return (
     <div className="p-6">
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <strong className="font-bold">Error:</strong>
+          <span className="block sm:inline"> {error}</span>
+        </div>
+      )}
       <div className="flex items-center gap-4 mb-6">
         <Link href="/dashboard/landlord/properties">
           <Button variant="outline" size="icon">
@@ -209,14 +313,14 @@ export default function PropertyDetailPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold">{property.title}</h1>
+          <h1 className="text-2xl font-bold">{safeProperty.title}</h1>
           <div className="flex items-center text-gray-500">
             <MapPin className="h-4 w-4 mr-1" />
-            <span>{property.location}</span>
+            <span>{safeProperty.location}</span>
           </div>
         </div>
         <div className="ml-auto flex gap-2">
-          <Link href={`/dashboard/landlord/properties/${property.id}/edit`}>
+          <Link href={`/dashboard/landlord/properties/${safeProperty.id}/edit`}>
             <Button variant="outline">
               <Edit className="h-4 w-4 mr-2" />
               Edit Property
@@ -230,13 +334,13 @@ export default function PropertyDetailPage() {
           <div className="space-y-4">
             <div className="aspect-video rounded-lg overflow-hidden relative">
               <img
-                src={property.images[activeImage]}
-                alt={property.title}
+                src={propertyImages[activeImage]}
+                alt={safeProperty.title}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {property.images.map((image, index) => (
+              {propertyImages.map((image: string, index: number) => (
                 <div
                   key={index}
                   className={`aspect-video rounded-md overflow-hidden cursor-pointer border-2 ${
@@ -244,244 +348,222 @@ export default function PropertyDetailPage() {
                   }`}
                   onClick={() => setActiveImage(index)}
                 >
-                  <img src={image} alt={`${property.title} ${index + 1}`} className="w-full h-full object-cover" />
+                  <img src={image} alt={`${safeProperty.title} ${index + 1}`} className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-4 mb-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="tenant">Tenant</TabsTrigger>
               <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="overview" className="space-y-6">
-              <Card>
+            <TabsContent value="overview" className="space-y-4 pt-4">
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="col-span-3">
                 <CardHeader>
-                  <CardTitle>Property Details</CardTitle>
+                    <CardTitle>Description</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-gray-700">{property.description}</p>
-                  
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
-                    <div className="flex flex-col items-center p-3 bg-gray-50 rounded-md">
-                      <BedDouble className="h-5 w-5 text-gray-500 mb-1" />
-                      <span className="text-sm text-gray-500">Bedrooms</span>
-                      <span className="font-medium">{property.bedrooms}</span>
-                    </div>
-                    <div className="flex flex-col items-center p-3 bg-gray-50 rounded-md">
-                      <Bath className="h-5 w-5 text-gray-500 mb-1" />
-                      <span className="text-sm text-gray-500">Bathrooms</span>
-                      <span className="font-medium">{property.bathrooms}</span>
-                    </div>
-                    <div className="flex flex-col items-center p-3 bg-gray-50 rounded-md">
-                      <SquareCode className="h-5 w-5 text-gray-500 mb-1" />
-                      <span className="text-sm text-gray-500">Area</span>
-                      <span className="font-medium">{property.area} {property.areaUnit}</span>
-                    </div>
-                    <div className="flex flex-col items-center p-3 bg-gray-50 rounded-md">
-                      <Wallet className="h-5 w-5 text-gray-500 mb-1" />
-                      <span className="text-sm text-gray-500">Rent</span>
-                      <span className="font-medium">{property.formattedPrice}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4">
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Amenities</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {property.amenities.map((amenity, index) => (
-                        <Badge key={index} variant="outline" className="bg-gray-50">
-                          {amenity}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
+                  <CardContent>
+                    <p>{safeProperty.description}</p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-base font-medium flex items-center">
+                      <BedDouble className="h-4 w-4 mr-2 text-orange-500" />
+                      Bedrooms
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <p className="text-2xl font-bold">{safeProperty.bedrooms}</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-base font-medium flex items-center">
+                      <Bath className="h-4 w-4 mr-2 text-orange-500" />
+                      Bathrooms
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <p className="text-2xl font-bold">{safeProperty.bathrooms}</p>
                 </CardContent>
               </Card>
               
               <Card>
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-base font-medium flex items-center">
+                      <SquareCode className="h-4 w-4 mr-2 text-orange-500" />
+                      Area
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <p className="text-2xl font-bold">{safeProperty.area} {safeProperty.areaUnit}</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="col-span-3">
                 <CardHeader>
-                  <CardTitle>Location</CardTitle>
+                    <CardTitle>Amenities</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <p className="text-gray-700">{property.address}</p>
-                    <div className="aspect-video rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                      <div className="text-gray-500 flex flex-col items-center">
-                        <MapPin className="h-8 w-8 mb-2" />
-                        <span>Map location at {property.coordinates.latitude.toFixed(4)}, {property.coordinates.longitude.toFixed(4)}</span>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {safeProperty.amenities.map((amenity: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span>{amenity}</span>
                       </div>
-                    </div>
+                      ))}
                   </div>
                 </CardContent>
               </Card>
+              </div>
             </TabsContent>
             
-            <TabsContent value="tenant" className="space-y-6">
-              {property.tenant ? (
+            <TabsContent value="tenant" className="space-y-4 pt-4">
+              {safeProperty.tenant ? (
                 <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <div className="space-y-1">
-                      <CardTitle>Current Tenant</CardTitle>
-                      <CardDescription>
-                        Lease period: {formatDate(property.tenant.leaseStart)} to {formatDate(property.tenant.leaseEnd)}
-                      </CardDescription>
+                  <CardHeader className="flex flex-row items-center space-y-0 gap-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={safeProperty.tenant.avatar} />
+                      <AvatarFallback>{safeProperty.tenant.avatarFallback}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <CardTitle>{safeProperty.tenant.name}</CardTitle>
+                      <CardDescription>Current Tenant</CardDescription>
                     </div>
-                    <Link href={`/dashboard/messages?tenant=${property.tenant.id}`}>
-                      <Button className="bg-orange-500 hover:bg-orange-600">
-                        <MessageCircle className="mr-2 h-4 w-4" />
-                        Message Tenant
+                    <Button className="ml-auto" variant="outline">
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Message
                       </Button>
-                    </Link>
                   </CardHeader>
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-16 w-16">
-                          <AvatarImage src={property.tenant.avatar} alt={property.tenant.name} />
-                          <AvatarFallback>{property.tenant.avatarFallback}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-medium text-lg">{property.tenant.name}</h3>
-                          <div className="space-y-1 text-sm text-gray-500">
-                            <p>{property.tenant.email}</p>
-                            <p>{property.tenant.phone}</p>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Email</span>
+                        <span>{safeProperty.tenant.email}</span>
                           </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Phone</span>
+                        <span>{safeProperty.tenant.phone}</span>
                         </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Lease Start</span>
+                        <span>{safeProperty.tenant.leaseStart ? formatDate(safeProperty.tenant.leaseStart) : "N/A"}</span>
                       </div>
-                      <div className="md:ml-auto grid grid-cols-2 gap-4">
-                        <div className="bg-gray-50 p-4 rounded-md">
-                          <p className="text-sm text-gray-500">Security Deposit</p>
-                          <p className="font-medium">₹{property.tenant.securityDeposit.toLocaleString('en-IN')}</p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Lease End</span>
+                        <span>{safeProperty.tenant.leaseEnd ? formatDate(safeProperty.tenant.leaseEnd) : "N/A"}</span>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-md">
-                          <p className="text-sm text-gray-500">Assurance Score</p>
-                          <p className="font-medium">{property.tenant.credScore}/100</p>
-                        </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Security Deposit</span>
+                        <span>₹{safeProperty.tenant.securityDeposit?.toLocaleString('en-IN') || "N/A"}</span>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ) : (
-                <Card className="text-center py-12">
-                  <CardContent>
-                    <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No active tenant</h3>
-                    <p className="text-gray-500 mb-6">
-                      This property doesn't have a tenant yet.
-                    </p>
-                    <Button className="bg-orange-500 hover:bg-orange-600">
-                      List Property
-                    </Button>
-                  </CardContent>
-                </Card>
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <Users className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Tenant Yet</h3>
+                  <p className="text-gray-500 mb-4">This property is not currently rented to any tenant.</p>
+                  <Button variant="outline">Find Tenants</Button>
+                </div>
               )}
-            </TabsContent>
-            
-            <TabsContent value="maintenance" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Maintenance Issues</h2>
-                <Link href="/dashboard/landlord/maintenance">
-                  <Button variant="outline">View All Issues</Button>
-                </Link>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Payment History</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {safeProperty.paymentHistory && safeProperty.paymentHistory.length > 0 ? (
+                    <div className="space-y-4">
+                      {safeProperty.paymentHistory.map((payment: any) => (
+                        <div key={payment.id} className="flex items-center justify-between border-b pb-2">
+                          <div>
+                            <p className="font-medium">{payment.amount}</p>
+                            <p className="text-sm text-gray-500">Due: {formatDate(payment.dueDate)}</p>
+                          </div>
+                          <div>
+                            {payment.status === "completed" ? (
+                              <Badge className="bg-green-500">
+                                <span className="flex items-center">
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  Paid on {formatDate(payment.paidDate)}
+                                </span>
+                              </Badge>
+                            ) : payment.status === "upcoming" ? (
+                              <Badge variant="outline" className="border-orange-500 text-orange-500">
+                                Upcoming
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="border-red-500 text-red-500">
+                                Overdue
+                              </Badge>
+                            )}
               </div>
-              
-              {property.maintenance && property.maintenance.length > 0 ? (
-                <div className="space-y-4">
-                  {property.maintenance.map((issue) => (
-                    <Card key={issue.id}>
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between">
-                          <CardTitle className="text-base">{issue.title}</CardTitle>
-                          {getMaintenanceStatusBadge(issue.status)}
                         </div>
-                        <CardDescription>
-                          Reported on {formatDate(issue.reportedDate)}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-gray-700">{issue.description}</p>
-                      </CardContent>
-                      <CardFooter className="border-t pt-4 flex justify-between">
-                        <Badge variant="outline" className={issue.priority === "high" ? "text-red-500" : issue.priority === "medium" ? "text-orange-500" : "text-green-500"}>
-                          {issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)} Priority
-                        </Badge>
-                        <Link href={`/dashboard/landlord/maintenance?issue=${issue.id}`}>
-                          <Button size="sm">View Details</Button>
-                        </Link>
-                      </CardFooter>
-                    </Card>
                   ))}
                 </div>
               ) : (
-                <Card className="text-center py-12">
-                  <CardContent>
-                    <Wrench className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No maintenance issues</h3>
-                    <p className="text-gray-500 mb-6">
-                      This property doesn't have any reported maintenance issues.
-                    </p>
+                    <div className="text-center py-8">
+                      <Wallet className="h-8 w-8 mx-auto text-gray-300 mb-2" />
+                      <p className="text-gray-500">No payment history available</p>
+                    </div>
+                  )}
                   </CardContent>
                 </Card>
-              )}
             </TabsContent>
             
-            <TabsContent value="payments" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Payment History</h2>
-                <Link href="/dashboard/landlord/payments">
-                  <Button variant="outline">View All Payments</Button>
-                </Link>
+            <TabsContent value="maintenance" className="space-y-4 pt-4">
+              {safeProperty.maintenance && safeProperty.maintenance.length > 0 ? (
+                safeProperty.maintenance.map((issue: any) => (
+                  <Card key={issue.id}>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle>{issue.title}</CardTitle>
+                        {getMaintenanceStatusBadge(issue.status)}
               </div>
-              
-              {property.paymentHistory && property.paymentHistory.length > 0 ? (
-                <div className="rounded-md border">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-3 text-sm font-medium text-gray-500">Due Date</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-500">Paid Date</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-500">Amount</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-500">Status</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-500">Method</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {property.paymentHistory.map((payment) => (
-                        <tr key={payment.id} className="border-b">
-                          <td className="p-3">{formatDate(payment.dueDate)}</td>
-                          <td className="p-3">{payment.paidDate ? formatDate(payment.paidDate) : "-"}</td>
-                          <td className="p-3 font-medium">{payment.amount}</td>
-                          <td className="p-3">
-                            <Badge className={
-                              payment.status === "completed" 
-                                ? "bg-green-500" 
-                                : payment.status === "upcoming" 
-                                ? "bg-blue-500" 
-                                : "bg-red-500"
-                            }>
-                              {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
-                            </Badge>
-                          </td>
-                          <td className="p-3">{payment.method ? payment.method.charAt(0).toUpperCase() + payment.method.slice(1) : "-"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      <CardDescription>Reported on {formatDate(issue.reportedDate)}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p>{issue.description}</p>
+                      
+                      {issue.status === "inProgress" && issue.scheduledDate && (
+                        <div className="mt-2 p-2 bg-orange-50 rounded-md flex items-center">
+                          <Calendar className="h-4 w-4 text-orange-500 mr-2" />
+                          <span className="text-sm">
+                            Scheduled for {formatDate(issue.scheduledDate)}
+                          </span>
                 </div>
+                      )}
+                    </CardContent>
+                    <CardFooter className="flex justify-end gap-2">
+                      <Button variant="outline" size="sm">
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Message Tenant
+                      </Button>
+                      {issue.status !== "resolved" && (
+                        <Button size="sm">
+                          <Wrench className="h-4 w-4 mr-2" />
+                          {issue.status === "reported" ? "Schedule Repair" : "Mark as Resolved"}
+                        </Button>
+                      )}
+                    </CardFooter>
+                  </Card>
+                ))
               ) : (
-                <Card className="text-center py-12">
-                  <CardContent>
-                    <Wallet className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No payment history</h3>
-                    <p className="text-gray-500 mb-6">
-                      There are no payment records for this property yet.
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <Wrench className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Maintenance Issues</h3>
+                  <p className="text-gray-500">This property has no reported maintenance issues.</p>
+                </div>
               )}
             </TabsContent>
           </Tabs>
@@ -495,95 +577,96 @@ export default function PropertyDetailPage() {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Status</span>
-                {getStatusBadge(property.status)}
+                {getStatusBadge(safeProperty.status)}
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Listed On</span>
-                <span>{formatDate(property.createdAt)}</span>
+                <span>{safeProperty.createdAt ? formatDate(safeProperty.createdAt) : "N/A"}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Property Type</span>
-                <span className="capitalize">{property.propertyType}</span>
+                <span className="capitalize">{safeProperty.propertyType}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Monthly Revenue</span>
-                <span className="font-semibold">₹{property.price.toLocaleString('en-IN')}</span>
+                <span className="font-semibold">₹{safeProperty.price?.toLocaleString('en-IN') || 0}</span>
               </div>
               
-              {property.tenant && (
+              {safeProperty.tenant && (
                 <>
                   <div className="border-t my-2 pt-2">
                     <p className="text-gray-500 text-sm">Current lease ends in</p>
                     <div className="flex justify-between items-center mt-1">
                       <div>
                         <Calendar className="h-4 w-4 text-orange-500 inline mr-1" />
-                        <span>{formatDate(property.tenant.leaseEnd)}</span>
+                        <span>{formatDate(safeProperty.tenant.leaseEnd)}</span>
                       </div>
                       <Badge variant="outline" className="bg-orange-50 text-orange-600">
-                        {Math.ceil((new Date(property.tenant.leaseEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+                        {Math.ceil((new Date(safeProperty.tenant.leaseEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
                       </Badge>
                     </div>
                   </div>
                 </>
               )}
             </CardContent>
-            <CardFooter className="flex-col space-y-2">
-              <Button className="w-full bg-orange-500 hover:bg-orange-600">Generate Rent Receipt</Button>
-              {property.tenant && (
-                <Button variant="outline" className="w-full">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Message Tenant
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Stats</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-50 p-3 rounded-md">
-                  <p className="text-xs text-gray-500">Maintenance</p>
-                  <p className="text-lg font-medium">{property.maintenance?.length || 0}</p>
-                  <p className="text-xs text-gray-500">Open issues</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-md">
-                  <p className="text-xs text-gray-500">Occupancy</p>
-                  <p className="text-lg font-medium">100%</p>
-                  <p className="text-xs text-gray-500">Since {property.tenant ? formatDate(property.tenant.leaseStart) : "N/A"}</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-md col-span-2">
-                  <p className="text-xs text-gray-500">Annual Revenue</p>
-                  <p className="text-lg font-medium">₹{(property.price * 12).toLocaleString('en-IN')}</p>
-                  <p className="text-xs text-gray-500">Based on current rent</p>
-                </div>
-              </div>
-            </CardContent>
           </Card>
           
           <PropertyBlockchainCard 
             property={{
-              id: property.id,
-              title: property.title,
-              blockchainId: property.blockchainId || null,
-              location: property.location,
-              price: property.price,
-              bedrooms: property.bedrooms,
-              bathrooms: property.bathrooms,
-              area: property.area,
-              areaUnit: property.areaUnit,
+              id: safeProperty.id,
+              title: safeProperty.title,
+              blockchainId: safeProperty.blockchainId,
+              location: safeProperty.location,
+              price: safeProperty.price,
+              bedrooms: safeProperty.bedrooms,
+              bathrooms: safeProperty.bathrooms,
+              area: safeProperty.area,
+              areaUnit: safeProperty.areaUnit,
               agreements: []
             }}
             tenants={[
-              property.tenant ? 
-                { id: property.tenant.id, name: property.tenant.name } : 
+              safeProperty.tenant ? 
+                { id: safeProperty.tenant.id, name: safeProperty.tenant.name } : 
                 undefined
             ].filter(Boolean)}
           />
         </div>
       </div>
+      
+      {/* Debug section - only visible in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mt-8 p-4 border border-gray-300 rounded-lg bg-gray-50">
+          <h2 className="text-xl font-semibold mb-2">Debug Information</h2>
+          <div className="space-y-2">
+            <p><strong>Property ID:</strong> {safeProperty.id}</p>
+            <p><strong>Blockchain ID:</strong> {safeProperty.blockchainId || 'Not set'}</p>
+            <p><strong>Created At:</strong> {safeProperty.createdAt}</p>
+            <div className="mt-4 space-x-2">
+              <a 
+                href={`/api/debug?action=getProperty&id=${encodeURIComponent(safeProperty.id)}`}
+                target="_blank"
+                className="inline-block px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              >
+                Debug API: Get Property
+              </a>
+              <a 
+                href={`/api/debug?action=createTestProperty&id=${encodeURIComponent(safeProperty.id)}`}
+                target="_blank"
+                className="inline-block px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+              >
+                Debug API: Create Test Property
+              </a>
+              <a 
+                href="/api/debug?action=getAllProperties"
+                target="_blank"
+                className="inline-block px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
+              >
+                Debug API: List All Properties
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 

@@ -13,7 +13,8 @@ import {
   List, 
   Plus, 
   Search, 
-  Trash 
+  Trash,
+  Loader2 
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -56,149 +57,91 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { PropertyCard } from "@/components/property-card"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "@/components/ui/use-toast"
 import { formatDate } from "@/lib/utils/date"
-
-// Mock property data
-const mockProperties = [
-  {
-    id: "prop-1",
-    title: "Luxury Villa with Pool",
-    location: "Whitefield, Bangalore",
-    price: "125000",
-    priceUnit: "month",
-    formattedPrice: "₹1,25,000/month",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-    status: "active" as const,
-    credScore: 98,
-    type: "villa",
-    bedrooms: 4,
-    bathrooms: 4.5,
-    area: 3200,
-    areaUnit: "sqft",
-    tenantName: "Priya Kumar",
-    leaseEnd: "2024-12-31",
-    createdAt: "2023-11-15",
-  },
-  {
-    id: "prop-2",
-    title: "Modern 3BHK Apartment",
-    location: "HSR Layout, Bangalore",
-    price: "65000",
-    priceUnit: "month",
-    formattedPrice: "₹65,000/month",
-    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-    status: "active" as const,
-    credScore: 95,
-    type: "apartment",
-    bedrooms: 3,
-    bathrooms: 3,
-    area: 1800,
-    areaUnit: "sqft",
-    tenantName: "Amit Bhatt",
-    leaseEnd: "2024-08-15",
-    createdAt: "2023-09-22",
-  },
-  {
-    id: "prop-3",
-    title: "Spacious Office Space",
-    location: "Indira Nagar, Bangalore",
-    price: "85000",
-    priceUnit: "month",
-    formattedPrice: "₹85,000/month",
-    image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-    status: "pending" as const,
-    credScore: 90,
-    type: "office",
-    bedrooms: 0,
-    bathrooms: 2,
-    area: 2200,
-    areaUnit: "sqft",
-    tenantName: "Vikram Gupta",
-    leaseEnd: "2024-10-01",
-    createdAt: "2023-10-05",
-  },
-  {
-    id: "prop-4",
-    title: "Cozy 2BHK with Balcony",
-    location: "Koramangala, Bangalore",
-    price: "45000",
-    priceUnit: "month",
-    formattedPrice: "₹45,000/month",
-    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-    status: "active" as const,
-    credScore: 92,
-    type: "apartment",
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 1200,
-    areaUnit: "sqft",
-    tenantName: "Neha Sharma",
-    leaseEnd: "2024-06-30",
-    createdAt: "2023-07-12",
-  },
-  {
-    id: "prop-5",
-    title: "Retail Shop in Mall",
-    location: "MG Road, Bangalore",
-    price: "120000",
-    priceUnit: "month",
-    formattedPrice: "₹1,20,000/month",
-    image: "https://images.unsplash.com/photo-1604328698692-f76ea9498e76?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
-    status: "active" as const,
-    credScore: 96,
-    type: "shop",
-    bedrooms: 0,
-    bathrooms: 1,
-    area: 800,
-    areaUnit: "sqft",
-    tenantName: "Arjun Kapoor",
-    leaseEnd: "2025-03-31",
-    createdAt: "2023-12-01",
-  },
-]
+import { useUser } from "@/hooks/useUser"
+import { getLandlordProperties } from "@/lib/helpers/property-helper"
 
 export default function LandlordPropertiesPage() {
   const searchParams = useSearchParams()
-  const [view, setView] = useState<"grid" | "list">("grid")
+  const success = searchParams.get("success")
+  const { user } = useUser()
+  const userId = user?.id || 'landlord-1' // Fallback ID for development
+  
+  const [properties, setProperties] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [typeFilter, setTypeFilter] = useState("all")
-  const [properties, setProperties] = useState(mockProperties)
-  const [showSuccessNotification, setShowSuccessNotification] = useState(false)
+  const [view, setView] = useState<"grid" | "list">("grid")
 
-  // Check for success parameter in URL (for add/edit redirects)
+  // Fetch properties on component mount
   useEffect(() => {
-    const success = searchParams.get('success')
-    if (success === 'true') {
+    async function fetchProperties() {
+      try {
+        setIsLoading(true)
+        const data = await getLandlordProperties(userId)
+        setProperties(data)
+      } catch (error) {
+        console.error("Error fetching properties:", error)
+        toast({
+          title: "Error",
+          description: "Failed to load properties. Please try again.",
+          variant: "destructive"
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProperties()
+  }, [userId])
+
+  // Show success toast when property is added
+  useEffect(() => {
+    if (success === "true") {
       toast({
-        title: "Success!",
-        description: "Your property has been saved successfully.",
-        variant: "default",
+        title: "Property Added",
+        description: "Your property has been successfully added.",
       })
     }
-  }, [searchParams])
+  }, [success])
 
-  // Filter properties based on search and filters
+  // Filter properties based on search term, status, and type
   const filteredProperties = properties.filter((property) => {
-    const matchesSearch = 
+    // Search term filter
+    const matchesSearch = searchTerm === "" || 
       property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.location.toLowerCase().includes(searchTerm.toLowerCase())
     
+    // Status filter
     const matchesStatus = statusFilter === "all" || property.status === statusFilter
-    const matchesType = typeFilter === "all" || property.type === typeFilter
+    
+    // Type filter
+    const matchesType = typeFilter === "all" || property.propertyType === typeFilter
     
     return matchesSearch && matchesStatus && matchesType
   })
 
-  // Delete property handler
-  const handleDeleteProperty = (id: string) => {
-    setProperties(properties.filter(property => property.id !== id))
-    toast({
-      title: "Property deleted",
-      description: "The property has been removed from your listings.",
-      variant: "destructive",
+  // Format price for display
+  const formatPrice = (price: number, priceUnit: string) => {
+    // Format currency
+    const formatter = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
     })
+    
+    const formattedPrice = formatter.format(price)
+    
+    // Add price unit
+    const unitMap: Record<string, string> = {
+      day: "/day",
+      week: "/week",
+      month: "/month"
+    }
+    
+    return `${formattedPrice}${unitMap[priceUnit] || ''}`
   }
 
   return (
@@ -225,25 +168,23 @@ export default function LandlordPropertiesPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex items-center space-x-4">
+        
           <div className="flex items-center space-x-2">
-            <Filter className="h-4 w-4 text-gray-500" />
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="rented">Rented</SelectItem>
+              <SelectItem value="maintenance">Maintenance</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Building className="h-4 w-4 text-gray-500" />
+          
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Property Type" />
               </SelectTrigger>
               <SelectContent>
@@ -256,7 +197,7 @@ export default function LandlordPropertiesPage() {
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          
           <div className="flex border rounded-md">
             <Button
               variant={view === "grid" ? "default" : "ghost"}
@@ -278,7 +219,12 @@ export default function LandlordPropertiesPage() {
         </div>
       </div>
 
-      {filteredProperties.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+          <span className="ml-2">Loading properties...</span>
+        </div>
+      ) : filteredProperties.length === 0 ? (
         <Card className="text-center py-12">
           <CardContent>
             <Building className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -301,25 +247,10 @@ export default function LandlordPropertiesPage() {
             <Card key={property.id} className="overflow-hidden">
               <div className="relative">
                 <img
-                  src={property.image}
+                  src={property.images && property.images.length > 0 ? property.images[0] : "/placeholder.svg?height=200&width=300"}
                   alt={property.title}
                   className="h-48 w-full object-cover"
                 />
-                <Badge
-                  className={`absolute right-2 top-2 ${
-                    property.status === "active"
-                      ? "bg-green-500"
-                      : property.status === "pending"
-                      ? "bg-orange-500"
-                      : "bg-blue-500"
-                  }`}
-                >
-                  {property.status === "active"
-                    ? "Active"
-                    : property.status === "pending"
-                    ? "Pending"
-                    : "Completed"}
-                </Badge>
                 <div className="absolute bottom-2 right-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -345,15 +276,13 @@ export default function LandlordPropertiesPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will permanently delete this property listing. This action cannot be undone.
+                              This will permanently delete the property listing.
+                              This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeleteProperty(property.id)}
-                              className="bg-red-500 hover:bg-red-600"
-                            >
+                            <AlertDialogAction className="bg-red-600 hover:bg-red-700">
                               Delete
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -367,14 +296,19 @@ export default function LandlordPropertiesPage() {
                 <h3 className="font-bold">{property.title}</h3>
                 <p className="text-sm text-gray-500">{property.location}</p>
                 <div className="mt-2 flex items-center justify-between">
-                  <p className="font-medium">{property.formattedPrice}</p>
-                  {property.status === "active" && (
+                  <p className="font-medium">{formatPrice(property.price, property.priceUnit)}</p>
+                  {property.status === "rented" && (
                     <Badge variant="outline" className="border-green-200 text-green-700 bg-green-50">
                       Leased
                     </Badge>
                   )}
+                  {property.blockchainId && (
+                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">
+                      On Blockchain
+                    </Badge>
+                  )}
                 </div>
-                {property.status === "active" && (
+                {property.status === "rented" && property.tenantName && (
                   <div className="mt-2 text-sm">
                     <p className="text-gray-500">
                       Tenant: <span className="text-gray-700">{property.tenantName}</span>
@@ -397,17 +331,16 @@ export default function LandlordPropertiesPage() {
           ))}
         </div>
       ) : (
-        <div className="rounded-md border">
+        <Card>
+          <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Property</TableHead>
-                <TableHead>Type</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Tenant</TableHead>
-                <TableHead>Lease Ends</TableHead>
+                  <TableHead>Created</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -415,75 +348,43 @@ export default function LandlordPropertiesPage() {
               {filteredProperties.map((property) => (
                 <TableRow key={property.id}>
                   <TableCell className="font-medium">
-                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                       <img
-                        src={property.image}
+                          src={property.images && property.images.length > 0 ? property.images[0] : "/placeholder.svg?height=30&width=30"}
                         alt={property.title}
-                        className="h-10 w-10 rounded-md object-cover"
+                          className="h-8 w-8 rounded-md object-cover"
                       />
                       <span>{property.title}</span>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-                      {property.type.charAt(0).toUpperCase() + property.type.slice(1)}
-                    </Badge>
-                  </TableCell>
                   <TableCell>{property.location}</TableCell>
-                  <TableCell>{property.formattedPrice}</TableCell>
+                    <TableCell>{formatPrice(property.price, property.priceUnit)}</TableCell>
                   <TableCell>
                     <Badge
-                      className={
-                        property.status === "active"
-                          ? "bg-green-500"
-                          : property.status === "pending"
-                          ? "bg-orange-500"
-                          : "bg-blue-500"
-                      }
-                    >
-                      {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+                        className={`${
+                          property.status === "available" 
+                            ? "bg-blue-50 text-blue-700 hover:bg-blue-50"
+                            : property.status === "rented"
+                            ? "bg-green-50 text-green-700 hover:bg-green-50"
+                            : "bg-gray-50 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {property.status === "available" ? "Available" : 
+                         property.status === "rented" ? "Leased" : 
+                         property.status.charAt(0).toUpperCase() + property.status.slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell>{property.tenantName || "-"}</TableCell>
-                  <TableCell>
-                    {property.leaseEnd
-                      ? formatDate(property.leaseEnd)
-                      : "-"}
-                  </TableCell>
+                    <TableCell>{formatDate(property.createdAt)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/dashboard/landlord/properties/${property.id}/edit`}>
-                        <Button size="icon" variant="ghost">
-                          <Edit className="h-4 w-4" />
+                        <Link href={`/dashboard/landlord/properties/${property.id}`}>
+                          <Button size="sm" variant="ghost">
+                            View
                         </Button>
                       </Link>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button size="icon" variant="ghost">
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will permanently delete this property listing. This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeleteProperty(property.id)}
-                              className="bg-red-500 hover:bg-red-600"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                      <Link href={`/dashboard/landlord/properties/${property.id}`}>
-                        <Button size="icon" variant="ghost">
-                          <ArrowLeft className="h-4 w-4 rotate-180" />
+                        <Link href={`/dashboard/landlord/properties/${property.id}/edit`}>
+                          <Button size="sm" variant="ghost">
+                            <Edit className="h-4 w-4" />
                         </Button>
                       </Link>
                     </div>
@@ -492,7 +393,8 @@ export default function LandlordPropertiesPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   )
